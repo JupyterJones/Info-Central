@@ -1,0 +1,19 @@
+fdupes -d /home/jack/Desktop/ /mnt/73777e11-76da-4fee-ba95-e731ac3ca459/Desktop/
+
+
+
+
+
+I have taken example of 2 directories p1 and p2
+
+First i will save the output of p1 and p2 directories filenames to 2 output files
+
+find /root/p1 -type f |awk -F "/" '{print $NF}'   > /var/tmp/P1_file.txt
+
+ find /root/p2 -type f |awk -F "/" '{print $NF}'   > /var/tmp/P2_file.txt
+
+Now i will find the common filenames in both directories and delete in one of directories. I wish you delete the duplicate files in /root/p1 and keep the files in /root/p2
+
+awk 'NR==FNR {a[$1];next}($1 in a) {print $1}' /var/tmp/P1_file.txt /var/tmp/P2_file.txt  |awk '{print "rm -rvf" " " "/root/p1/"$1}' | sh
+
+Tested and worked fine
