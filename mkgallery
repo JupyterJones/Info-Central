@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Define the directory containing the images
+dir=$(pwd)
+
+# Create the HTML header
+cat <<EOF > gallery.html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Gallery</title>
+  <style>
+    body {
+      background: darkred;
+    } 
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .gallery img {
+      width: 450px;
+      border: 10px beige solid;
+      height: auto;
+      object-fit: cover;
+      margin: 10px;
+    }
+    p {
+      color: orange;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+<p>To view full size Open Image in new tab.</p><br />
+<div class="gallery">
+EOF
+
+# Loop through each image in the directory and add it to the gallery
+for file in "$dir"/*.png "$dir"/*.jpg "$dir"/*.jpeg; do
+    [ -f "$file" ] || continue
+    echo "    <img src=\"$file\">" >> gallery.html
+done
+
+# Create the HTML footer
+cat <<EOF >> gallery.html
+  </div>
+</body>
+</html>
+EOF
+
+echo "Gallery created at gallery.html"

@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stable Diffusion Color &amp; Atmosphere Guide</title>
+  <style>
+    :root {
+      --bg-primary: #0a0f1d;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1f2937;
+      --bg-card: #151e32;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --border-color: #243048;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --accent-orange: #fb923c;
+      --accent-emerald: #34d399;
+      --accent-purple: #c084fc;
+      --accent-rose: #fb7185;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.6);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --bg-card: #ffffff;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --border-color: #e2e8f0;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --accent-glow: rgba(2, 132, 199, 0.15);
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      padding-bottom: 90px; /* space for prompt builder footer */
+    }
+
+    /* Top Sticky Header */
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.25rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-inner {
+      max-width: 1350px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6, #10b981);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.4rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-badge {
+      font-size: 0.72rem;
+      background: linear-gradient(135deg, rgba(236,72,153,0.2), rgba(139,92,246,0.2));
+      color: #c084fc;
+      border: 1px solid rgba(192,132,252,0.35);
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-sub {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.83rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      transition: all 0.15s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-btn:hover {
+      color: var(--text-primary);
+      background: var(--border-color);
+      border-color: var(--text-muted);
+    }
+
+    .theme-btn {
+      padding: 0.45rem 0.75rem;
+      border-radius: var(--radius-sm);
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1350px;
+      margin: 0 auto;
+      padding: 1.75rem 1.5rem 3rem;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9)), radial-gradient(circle at top right, rgba(56, 189, 248, 0.15), transparent 60%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem 2.25rem;
+      margin-bottom: 2.25rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-banner::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #ec4899, #8b5cf6, #38bdf8, #10b981);
+    }
+
+    .hero-headline {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.65rem;
+      color: var(--text-primary);
+    }
+
+    .hero-desc {
+      font-size: 0.98rem;
+      color: var(--text-secondary);
+      max-width: 900px;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .hero-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 9999px;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Section Styling */
+    .section-block {
+      margin-bottom: 3rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--text-primary);
+    }
+
+    .section-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      width: 100%;
+      margin-top: -0.4rem;
+    }
+
+    /* Comparison Cards (Before vs After) */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .comparison-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .comparison-card-top {
+      padding: 1rem 1.25rem;
+      background: rgba(239, 68, 68, 0.06);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .cliche-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #ef4444;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.4rem;
+    }
+
+    .cliche-prompt {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #fca5a5;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 0.45rem 0.75rem;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid #ef4444;
+    }
+
+    .comparison-card-bottom {
+      padding: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .pro-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #10b981;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .pro-prompt {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      background: var(--bg-primary);
+      padding: 0.75rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid #10b981;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    .palette-swatches-strip {
+      display: flex;
+      gap: 0.35rem;
+      align-items: center;
+      margin-top: 0.25rem;
+    }
+
+    .mini-swatch {
+      height: 22px;
+      flex: 1;
+      border-radius: 4px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .mini-swatch:hover {
+      transform: scaleY(1.2);
+    }
+
+    .why-it-works {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 0.65rem;
+    }
+
+    .btn-copy-prompt {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-copy-prompt:hover {
+      background: var(--accent);
+      color: #0a0f1d;
+      border-color: var(--accent);
+    }
+
+    .btn-add-builder {
+      background: transparent;
+      border: 1px dashed var(--border-color);
+      color: var(--accent);
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-add-builder:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: var(--accent);
+    }
+
+    /* Film Stock Cards Grid */
+    .film-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.1rem;
+    }
+
+    .film-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .film-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--accent);
+    }
+
+    .film-swatch-bar {
+      height: 48px;
+      width: 100%;
+      display: flex;
+    }
+
+    .film-bar-color {
+      flex: 1;
+      height: 100%;
+    }
+
+    .film-body {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      flex: 1;
+    }
+
+    .film-name-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .film-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .film-year {
+      font-size: 0.72rem;
+      background: var(--bg-primary);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      font-family: var(--font-mono);
+    }
+
+    .film-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .film-keywords {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.2rem;
+    }
+
+    .kw-tag {
+      font-size: 0.72rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.12s ease;
+      font-family: var(--font-mono);
+    }
+
+    .kw-tag:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    /* Lighting & Atmospheric Skies Grid */
+    .lighting-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.1rem;
+    }
+
+    .lighting-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .lighting-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .lighting-preview-gradient {
+      height: 70px;
+      width: 100%;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      padding: 0.5rem 0.75rem;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .lighting-preview-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+    }
+
+    .lighting-card-body {
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .lighting-title {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .lighting-desc {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* Cinematography Color Grades */
+    .cinema-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.1rem;
+    }
+
+    .cinema-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cinema-banner {
+      height: 60px;
+      display: flex;
+    }
+
+    .cinema-color-strip {
+      flex: 1;
+      height: 100%;
+    }
+
+    .cinema-body {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      flex: 1;
+    }
+
+    .cinema-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .cinema-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* Nuanced Vocabulary Bank */
+    .vocab-table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .vocab-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    .vocab-table th {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .vocab-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    .vocab-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .vocab-cliche-cell {
+      font-weight: 700;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+    }
+
+    .vocab-tokens-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .vocab-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      padding: 0.22rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .vocab-pill:hover {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .vocab-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Floating / Sticky Prompt Builder Bar at Bottom */
+    .prompt-builder-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border-color);
+      padding: 0.75rem 1.5rem;
+      z-index: 50;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .builder-inner {
+      max-width: 1350px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .builder-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+    }
+
+    .builder-input-wrap {
+      flex: 1 1 380px;
+      position: relative;
+    }
+
+    .builder-input {
+      width: 100%;
+      padding: 0.55rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .builder-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .builder-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-builder-copy {
+      background: var(--accent);
+      color: #0a0f1d;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-builder-copy:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .btn-builder-clear {
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 0.55rem 0.8rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-builder-clear:hover {
+      color: var(--text-primary);
+      background: var(--border-color);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 5.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid var(--accent);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      padding: 0.65rem 1.25rem;
+      border-radius: 9999px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 100;
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      color: var(--accent);
+    }
+
+    /* Pro-Tip Box */
+    .pro-tip {
+      background: rgba(56, 189, 248, 0.07);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .pro-tip strong {
+      color: var(--accent);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+      .builder-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .builder-actions {
+        justify-content: flex-end;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">🎨</div>
+        <div>
+          <div class="brand-title">
+            Stable Diffusion Color &amp; Atmosphere Guide
+            <span class="brand-badge">SDXL &bull; SD 1.5 &bull; Flux</span>
+          </div>
+          <div class="brand-sub">Master color grading, film stocks, atmospheric skies &amp; kill generic prompt clichés</div>
+        </div>
+      </div>
+
+      <div class="nav-links">
+        <a href="#cliches" class="nav-btn">⚡ Cliché Fixes</a>
+        <a href="#film-stocks" class="nav-btn">🎞️ Film Stocks</a>
+        <a href="#lighting" class="nav-btn">🌅 Skies &amp; Lighting</a>
+        <a href="#cinematography" class="nav-btn">🎬 Color Grading</a>
+        <a href="#vocabulary" class="nav-btn">💎 Vocab Bank</a>
+        <a href="colors.html" class="nav-btn" target="_blank" title="View Full 745 HTML Color Palette">📋 745 Hex Chart &rarr;</a>
+        <button class="theme-btn" id="themeBtn" title="Toggle Theme">☀️</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <h1 class="hero-headline">Stop Prompting "Blue Sky" and "Colorful Sunset".</h1>
+      <p class="hero-desc">
+        CLIP and T5 text encoders don't see color codes like <code style="font-family:var(--font-mono); color:var(--accent);">#FF0000</code>, and generic words like <em>"blue sky and white fluffy clouds"</em> or <em>"colorful sunset"</em> produce the bland statistical average of millions of amateur vacation photos.
+        To get rich, cinematic, gallery-grade images in Stable Diffusion, you must prompt using <strong>real-world film stocks</strong>, <strong>cinematic color grading</strong>, <strong>atmospheric lighting terms</strong>, and <strong>nuanced pigment descriptors</strong>.
+      </p>
+      <div class="hero-tags">
+        <span class="hero-tag">💡 <strong>Rule 1:</strong> Film stocks anchor entire color harmonies</span>
+        <span class="hero-tag">💡 <strong>Rule 2:</strong> Replace basic hues with pigments (e.g. Cerulean, Ochre)</span>
+        <span class="hero-tag">💡 <strong>Rule 3:</strong> Prompt light interaction, not just objects</span>
+      </div>
+    </div>
+
+    <!-- Section 1: The Cliché Fixer -->
+    <section class="section-block" id="cliches">
+      <div class="section-header">
+        <h2 class="section-title">⚡ 1. The Cliché Fixer: Before &amp; After Transformations</h2>
+        <div class="section-desc">See exactly how substituting flat, amateur descriptions with atmospheric color prompts elevates image generation.</div>
+      </div>
+
+      <div class="comparison-grid">
+
+        <!-- Card 1: Sunset -->
+        <div class="comparison-card">
+          <div class="comparison-card-top">
+            <span class="cliche-badge">❌ Tired Cliché Prompt</span>
+            <div class="cliche-prompt">"colorful orange sunset over the ocean, beautiful colors"</div>
+          </div>
+          <div class="comparison-card-bottom">
+            <span class="pro-badge">✨ Professional Transformation</span>
+            <div class="pro-prompt">
+              "Molten copper and bruised violet dusk over tempestuous deep navy ocean waves, dramatic alpenglow, low-angle amber rim light, CineStill 800T color grading, volumetric sea mist, atmospheric depth"
+            </div>
+            <div class="palette-swatches-strip" title="Palette: Molten Copper, Saffron, Bruised Violet, Deep Navy">
+              <div class="mini-swatch" style="background:#c2410c;" title="#c2410c Molten Copper"></div>
+              <div class="mini-swatch" style="background:#f59e0b;" title="#f59e0b Saffron Glow"></div>
+              <div class="mini-swatch" style="background:#581c87;" title="#581c87 Bruised Violet"></div>
+              <div class="mini-swatch" style="background:#0f172a;" title="#0f172a Deep Navy Abyss"></div>
+            </div>
+            <p class="why-it-works">
+              <strong>Why it works:</strong> Avoids muddy neon oversaturation. Replaces generic "orange" with <em>molten copper</em> and introduces deep violet and navy complementary shadows for high-end cinematic dynamic range.
+            </p>
+            <div class="card-actions">
+              <button class="btn-copy-prompt" data-copy="Molten copper and bruised violet dusk over tempestuous deep navy ocean waves, dramatic alpenglow, low-angle amber rim light, CineStill 800T color grading, volumetric sea mist, atmospheric depth">
+                📋 Copy Prompt
+              </button>
+              <button class="btn-add-builder" data-append="molten copper and bruised violet dusk, dramatic alpenglow, CineStill 800T color grading">
+                + Add to Builder
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Blue Sky & Meadow -->
+        <div class="comparison-card">
+          <div class="comparison-card-top">
+            <span class="cliche-badge">❌ Tired Cliché Prompt</span>
+            <div class="cliche-prompt">"blue sky and white fluffy clouds over a green grass meadow"</div>
+          </div>
+          <div class="comparison-card-bottom">
+            <span class="pro-badge">✨ Professional Transformation</span>
+            <div class="pro-prompt">
+              "Expansive pale cerulean canopy with gossamer cirrus wisps, diffused morning ambient lighting, rolling meadow in muted sage and wild chamomile, Kodak Portra 400 natural tones, gentle specular highlights"
+            </div>
+            <div class="palette-swatches-strip" title="Palette: Pale Cerulean, Gossamer White, Muted Sage, Chamomile Gold">
+              <div class="mini-swatch" style="background:#7dd3fc;" title="#7dd3fc Pale Cerulean"></div>
+              <div class="mini-swatch" style="background:#f1f5f9;" title="#f1f5f9 Gossamer White"></div>
+              <div class="mini-swatch" style="background:#65a30d;" title="#65a30d Muted Sage"></div>
+              <div class="mini-swatch" style="background:#fef08a;" title="#fef08a Chamomile Gold"></div>
+            </div>
+            <p class="why-it-works">
+              <strong>Why it works:</strong> "Fluffy clouds" often yields fake CGI blobs. <em>Gossamer cirrus wisps</em> produces delicate, photorealistic cloud textures, while <em>sage</em> replaces fake cartoon "astroturf" green.
+            </p>
+            <div class="card-actions">
+              <button class="btn-copy-prompt" data-copy="Expansive pale cerulean canopy with gossamer cirrus wisps, diffused morning ambient lighting, rolling meadow in muted sage and wild chamomile, Kodak Portra 400 natural tones, gentle specular highlights">
+                📋 Copy Prompt
+              </button>
+              <button class="btn-add-builder" data-append="pale cerulean canopy, gossamer cirrus wisps, muted sage, Kodak Portra 400 natural tones">
+                + Add to Builder
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Cyberpunk Neon -->
+        <div class="comparison-card">
+          <div class="comparison-card-top">
+            <span class="cliche-badge">❌ Tired Cliché Prompt</span>
+            <div class="cliche-prompt">"cyberpunk city street at night with colorful neon lights"</div>
+          </div>
+          <div class="comparison-card-bottom">
+            <span class="pro-badge">✨ Professional Transformation</span>
+            <div class="pro-prompt">
+              "Nocturnal cyberpunk alley, bi-chromatic hot fuchsia and electric cyan neon tubes reflecting on rain-slicked asphalt, deep obsidian shadows, volumetric steam, anamorphic horizontal lens flare, Blade Runner 2049 color grade"
+            </div>
+            <div class="palette-swatches-strip">
+              <div class="mini-swatch" style="background:#ec4899;" title="#ec4899 Hot Fuchsia"></div>
+              <div class="mini-swatch" style="background:#06b6d4;" title="#06b6d4 Electric Cyan"></div>
+              <div class="mini-swatch" style="background:#090d16;" title="#090d16 Obsidian Shadow"></div>
+              <div class="mini-swatch" style="background:#334155;" title="#334155 Wet Asphalt"></div>
+            </div>
+            <p class="why-it-works">
+              <strong>Why it works:</strong> "Colorful" creates messy rainbow clutter. Specifying a <em>bi-chromatic</em> palette (fuchsia + cyan) anchors a disciplined palette, while <em>obsidian shadows</em> preserves high dynamic contrast.
+            </p>
+            <div class="card-actions">
+              <button class="btn-copy-prompt" data-copy="Nocturnal cyberpunk alley, bi-chromatic hot fuchsia and electric cyan neon tubes reflecting on rain-slicked asphalt, deep obsidian shadows, volumetric steam, anamorphic horizontal lens flare, Blade Runner 2049 color grade">
+                📋 Copy Prompt
+              </button>
+              <button class="btn-add-builder" data-append="bi-chromatic fuchsia and cyan neon, rain-slicked asphalt, Blade Runner 2049 color grade">
+                + Add to Builder
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Dark Forest -->
+        <div class="comparison-card">
+          <div class="comparison-card-top">
+            <span class="cliche-badge">❌ Tired Cliché Prompt</span>
+            <div class="cliche-prompt">"dark spooky forest, scary trees, mist, night"</div>
+          </div>
+          <div class="comparison-card-bottom">
+            <span class="pro-badge">✨ Professional Transformation</span>
+            <div class="pro-prompt">
+              "Primeval ancient pine forest shrouded in dense viridian fog, monochromatic damp moss and charcoal bark, muted desaturated cold tones, diffused eerie twilight, Nordic noir cinematography, quiet melancholy"
+            </div>
+            <div class="palette-swatches-strip">
+              <div class="mini-swatch" style="background:#134e4a;" title="#134e4a Dense Viridian"></div>
+              <div class="mini-swatch" style="background:#2dd4bf;" title="#2dd4bf Pale Fog"></div>
+              <div class="mini-swatch" style="background:#1c1917;" title="#1c1917 Charcoal Bark"></div>
+              <div class="mini-swatch" style="background:#475569;" title="#475569 Cold Slate"></div>
+            </div>
+            <p class="why-it-works">
+              <strong>Why it works:</strong> Rather than forcing SD to invent "spooky" monsters, <em>dense viridian fog</em> and <em>muted desaturated cold tones</em> evoke naturalistic suspense and high cinematic production value.
+            </p>
+            <div class="card-actions">
+              <button class="btn-copy-prompt" data-copy="Primeval ancient pine forest shrouded in dense viridian fog, monochromatic damp moss and charcoal bark, muted desaturated cold tones, diffused eerie twilight, Nordic noir cinematography, quiet melancholy">
+                📋 Copy Prompt
+              </button>
+              <button class="btn-add-builder" data-append="primeval pine forest, dense viridian fog, charcoal bark, muted desaturated cold tones, Nordic noir">
+                + Add to Builder
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 2: Film Stocks & Emulsions -->
+    <section class="section-block" id="film-stocks">
+      <div class="section-header">
+        <h2 class="section-title">🎞️ 2. Film Stocks: The Single Most Powerful Color Modifiers in SD</h2>
+        <div class="section-desc">CLIP was trained on millions of museum and photographic archives tagged with specific film emulsions. Each film stock automatically injects an authentic, cohesive color palette.</div>
+      </div>
+
+      <div class="film-grid">
+
+        <!-- Kodachrome 64 -->
+        <div class="film-card">
+          <div class="film-swatch-bar">
+            <div class="film-bar-color" style="background:#b91c1c;"></div>
+            <div class="film-bar-color" style="background:#d97706;"></div>
+            <div class="film-bar-color" style="background:#1e3a8a;"></div>
+            <div class="film-bar-color" style="background:#18181b;"></div>
+          </div>
+          <div class="film-body">
+            <div class="film-name-row">
+              <div class="film-name">Kodachrome 64 / 25</div>
+              <div class="film-year">1970s–1980s</div>
+            </div>
+            <p class="film-desc">
+              Legendary National Geographic look. Rich, deep, punchy warm reds and ochres, creamy skin tones, deep ink blacks, and vintage analog warmth without cheesy grain.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="Kodachrome 64 film stock">Kodachrome 64</span>
+              <span class="kw-tag" data-append="vintage National Geographic photography aesthetic">NatGeo Aesthetic</span>
+              <span class="kw-tag" data-append="punchy analog warm reds and deep blacks">Warm Reds</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fujichrome Velvia 50 -->
+        <div class="film-card">
+          <div class="film-swatch-bar">
+            <div class="film-bar-color" style="background:#059669;"></div>
+            <div class="film-bar-color" style="background:#0284c7;"></div>
+            <div class="film-bar-color" style="background:#d946ef;"></div>
+            <div class="film-bar-color" style="background:#0f172a;"></div>
+          </div>
+          <div class="film-body">
+            <div class="film-name-row">
+              <div class="film-name">Fujichrome Velvia 50</div>
+              <div class="film-year">Landscape Gold</div>
+            </div>
+            <p class="film-desc">
+              The king of outdoor landscape colors. Ultra-saturated emerald greens, vivid cobalt blues, punchy sunset magentas, and razor-sharp micro-contrast.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="Fujichrome Velvia 50 slide film">Velvia 50</span>
+              <span class="kw-tag" data-append="hyper-vibrant emeralds and oceanic blues">Vibrant Emeralds</span>
+              <span class="kw-tag" data-append="punchy slide film contrast">High Contrast</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kodak Portra 400 -->
+        <div class="film-card">
+          <div class="film-swatch-bar">
+            <div class="film-bar-color" style="background:#fed7aa;"></div>
+            <div class="film-bar-color" style="background:#fdba74;"></div>
+            <div class="film-bar-color" style="background:#94a3b8;"></div>
+            <div class="film-bar-color" style="background:#cbd5e1;"></div>
+          </div>
+          <div class="film-body">
+            <div class="film-name-row">
+              <div class="film-name">Kodak Portra 400 / 800</div>
+              <div class="film-year">Portrait Benchmark</div>
+            </div>
+            <p class="film-desc">
+              Soft, natural, flattering portrait tones. Gentle highlight roll-off, pastel undertones, warm golden skin illumination, and subdued, realistic greenery.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="Kodak Portra 400 film stock">Portra 400</span>
+              <span class="kw-tag" data-append="soft pastel highlight roll-off">Pastel Roll-off</span>
+              <span class="kw-tag" data-append="natural flattering skin tones">Natural Skin</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CineStill 800T -->
+        <div class="film-card">
+          <div class="film-swatch-bar">
+            <div class="film-bar-color" style="background:#0891b2;"></div>
+            <div class="film-bar-color" style="background:#f43f5e;"></div>
+            <div class="film-bar-color" style="background:#1e1b4b;"></div>
+            <div class="film-bar-color" style="background:#f97316;"></div>
+          </div>
+          <div class="film-body">
+            <div class="film-name-row">
+              <div class="film-name">CineStill 800T</div>
+              <div class="film-year">Night &amp; Tungsten</div>
+            </div>
+            <p class="film-desc">
+              Cinema motion picture stock modified for still cameras. Cool cyan/blue shadows with a distinctive warm red halation glow around lamps and streetlights.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="CineStill 800T tungsten film stock">CineStill 800T</span>
+              <span class="kw-tag" data-append="red halation glow around specular lights">Red Halation</span>
+              <span class="kw-tag" data-append="nocturnal teal and amber mood">Teal Shadows</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Technicolor 3-Strip -->
+        <div class="film-card">
+          <div class="film-swatch-bar">
+            <div class="film-bar-color" style="background:#dc2626;"></div>
+            <div class="film-bar-color" style="background:#eab308;"></div>
+            <div class="film-bar-color" style="background:#2563eb;"></div>
+            <div class="film-bar-color" style="background:#16a34a;"></div>
+          </div>
+          <div class="film-body">
+            <div class="film-name-row">
+              <div class="film-name">Technicolor 3-Strip</div>
+              <div class="film-year">1930s–1950s</div>
+            </div>
+            <p class="film-desc">
+              The legendary Golden Hollywood look (*Wizard of Oz*, *Singin' in the Rain*). Glorious primary color separation, painterly vivid hues, theatrical saturation.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="1940s Technicolor three-strip process">Technicolor 3-Strip</span>
+              <span class="kw-tag" data-append="theatrical painterly primary saturation">Painterly Primaries</span>
+              <span class="kw-tag" data-append="golden age Hollywood cinematic color">Golden Age Cinema</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Polaroid SX-70 -->
+        <div class="film-card">
+          <div class="film-swatch-bar">
+            <div class="film-bar-color" style="background:#e2e8f0;"></div>
+            <div class="film-bar-color" style="background:#fde047;"></div>
+            <div class="film-bar-color" style="background:#67e8f9;"></div>
+            <div class="film-bar-color" style="background:#78716c;"></div>
+          </div>
+          <div class="film-body">
+            <div class="film-name-row">
+              <div class="film-name">Polaroid SX-70 / 600</div>
+              <div class="film-year">Instant Nostalgia</div>
+            </div>
+            <p class="film-desc">
+              Creamy faded pastel wash, soft organic chemical vignette around edges, slightly warm lifted blacks, intimate imperfect 1980s dreamlike memory feel.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="vintage Polaroid SX-70 instant photo">Polaroid SX-70</span>
+              <span class="kw-tag" data-append="faded nostalgic emulsion and lifted blacks">Faded Emulsion</span>
+              <span class="kw-tag" data-append="soft creamy chemical vignette">Creamy Vignette</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pro-tip">
+        <span>💡</span>
+        <div>
+          <strong>Esperanza's Pro-Tip:</strong> Never combine conflicting film stocks in one prompt (e.g. don't write <em>"Kodachrome 64 and Velvia 50"</em>). Pick <strong>one</strong> film stock and place it near the end of your prompt as an aesthetic anchor.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Skies, Atmospheric Lighting & Time of Day -->
+    <section class="section-block" id="lighting">
+      <div class="section-header">
+        <h2 class="section-title">🌅 3. Atmospheric Skies &amp; Lighting: Beyond "Sunny" and "Sunset"</h2>
+        <div class="section-desc">Color in Stable Diffusion is fundamentally driven by lighting. Use these specific optical and meteorological terms to create breathtaking skies.</div>
+      </div>
+
+      <div class="lighting-grid">
+
+        <!-- Golden Hour & Alpenglow -->
+        <div class="lighting-card">
+          <div class="lighting-preview-gradient" style="background: linear-gradient(135deg, #fbbf24 0%, #ea580c 50%, #831843 100%);">
+            <span class="lighting-preview-label">Alpenglow &bull; Amber &amp; Crimson</span>
+          </div>
+          <div class="lighting-card-body">
+            <div class="lighting-title">Alpenglow &amp; Low-Angle Rake Light</div>
+            <p class="lighting-desc">
+              The reddish glow seen near horizontal peaks before sunrise or after sunset. Casts long, dramatic shadows and honey-gold rim highlights on hair and edges.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="alpenglow horizon with honeyed rim light">Alpenglow</span>
+              <span class="kw-tag" data-append="low-angle rake lighting with long shadows">Low Rake Angle</span>
+              <span class="kw-tag" data-append="golden hour specular highlights">Golden Specular</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blue Hour -->
+        <div class="lighting-card">
+          <div class="lighting-preview-gradient" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 60%, #312e81 100%);">
+            <span class="lighting-preview-label">Blue Hour &bull; Cobalt &amp; Ultramarine</span>
+          </div>
+          <div class="lighting-card-body">
+            <div class="lighting-title">Blue Hour (Nautical Twilight)</div>
+            <p class="lighting-desc">
+              The 20 minutes right after sunset or before sunrise. The sky turns rich deep ultramarine and indigo, creating stunning contrast against warm indoor or street lamp lights.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="nautical blue hour twilight, deep cobalt sky">Blue Hour</span>
+              <span class="kw-tag" data-append="ultramarine skylight contrasting warm lamplight">Cobalt vs Lamp</span>
+              <span class="kw-tag" data-append="cool ambient melancholy">Cool Ambient</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Crepuscular Rays / God Rays -->
+        <div class="lighting-card">
+          <div class="lighting-preview-gradient" style="background: linear-gradient(135deg, #475569 0%, #d97706 50%, #0f172a 100%);">
+            <span class="lighting-preview-label">Crepuscular Rays &bull; Volumetric Gold</span>
+          </div>
+          <div class="lighting-card-body">
+            <div class="lighting-title">Crepuscular Rays &amp; Atmospheric Haze</div>
+            <p class="lighting-desc">
+              Sunbeams streaming through broken cloud layers or forest foliage. Creates physical pillars of golden atmospheric volume, adding immense depth.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="volumetric crepuscular god rays streaming through haze">God Rays</span>
+              <span class="kw-tag" data-append="subtle atmospheric particulate haze">Atmospheric Haze</span>
+              <span class="kw-tag" data-append="backlit dust motes with golden glow">Backlit Motes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overcast Silver Diffused -->
+        <div class="lighting-card">
+          <div class="lighting-preview-gradient" style="background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 50%, #475569 100%);">
+            <span class="lighting-preview-label">Overcast &bull; Silver-Pewter Silk</span>
+          </div>
+          <div class="lighting-card-body">
+            <div class="lighting-title">Pewter Overcast &amp; Diffused Ambient</div>
+            <p class="lighting-desc">
+              Nature’s giant softbox. A flat, pearlescent slate sky that eliminates harsh unflattering squint shadows, letting local textures and true skin colors flourish.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="diffused overcast silver-pewter sky, soft ambient lighting">Silver Overcast</span>
+              <span class="kw-tag" data-append="shadowless soft light, gentle contrast">Shadowless Soft</span>
+              <span class="kw-tag" data-append="pearly slate skylight">Pearly Slate</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chiaroscuro & Stormlight -->
+        <div class="lighting-card">
+          <div class="lighting-preview-gradient" style="background: linear-gradient(135deg, #090d16 0%, #155e75 50%, #f59e0b 100%);">
+            <span class="lighting-preview-label">Stormlight &bull; Gunmetal &amp; Sunlight</span>
+          </div>
+          <div class="lighting-card-body">
+            <div class="lighting-title">Stormlight &amp; Dramatic Chiaroscuro</div>
+            <p class="lighting-desc">
+              When a bright shaft of direct sun strikes a subject against a menacing backdrop of pitch-dark, bruising storm thunderheads. Extreme visual tension.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="dramatic stormlight, piercing sunbeam against gunmetal clouds">Stormlight</span>
+              <span class="kw-tag" data-append="Baroque chiaroscuro lighting, deep contrast">Chiaroscuro</span>
+              <span class="kw-tag" data-append="bruised cumulonimbus anvil sky">Bruised Clouds</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subsurface Scattering -->
+        <div class="lighting-card">
+          <div class="lighting-preview-gradient" style="background: linear-gradient(135deg, #10b981 0%, #84cc16 50%, #065f46 100%);">
+            <span class="lighting-preview-label">Backlit &bull; Subsurface Scattering</span>
+          </div>
+          <div class="lighting-card-body">
+            <div class="lighting-title">Subsurface Scattering &amp; Translucence</div>
+            <p class="lighting-desc">
+              Light passing through semi-transparent materials like tree leaves, earlobes, water drops, or petals. Creates an internal glowing luminescence.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="subsurface scattering, translucent sunlit glowing leaves">Subsurface Glow</span>
+              <span class="kw-tag" data-append="dappled sunlight filtering through canopy">Dappled Canopy</span>
+              <span class="kw-tag" data-append="luminescent emerald rim lighting">Luminescent Rim</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 4: Cinematography & Color Grading -->
+    <section class="section-block" id="cinematography">
+      <div class="section-header">
+        <h2 class="section-title">🎬 4. Cinematographic Color Grading Styles</h2>
+        <div class="section-desc">Movie color grading ensures shadows and highlights hold complementary hues rather than pure monochrome tints.</div>
+      </div>
+
+      <div class="cinema-grid">
+
+        <!-- Teal and Orange -->
+        <div class="cinema-card">
+          <div class="cinema-banner">
+            <div class="cinema-color-strip" style="background:#0e7490;"></div>
+            <div class="cinema-color-strip" style="background:#155e75;"></div>
+            <div class="cinema-color-strip" style="background:#f97316;"></div>
+            <div class="cinema-color-strip" style="background:#ea580c;"></div>
+          </div>
+          <div class="cinema-body">
+            <div class="cinema-title">Teal &amp; Orange (Blockbuster Grade)</div>
+            <p class="cinema-desc">
+              The Hollywood gold standard (*Mad Max: Fury Road*, Michael Bay). Shadows pushed into cool deep teal/cyan, while skin and highlights pop in radiant warm amber.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="cinematic teal and orange color grading, Hollywood color timing">Teal &amp; Orange</span>
+              <span class="kw-tag" data-append="cool cyan shadows and warm amber highlights">Cyan vs Amber</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wes Anderson Pastel -->
+        <div class="cinema-card">
+          <div class="cinema-banner">
+            <div class="cinema-color-strip" style="background:#fbcfe8;"></div>
+            <div class="cinema-color-strip" style="background:#fef08a;"></div>
+            <div class="cinema-color-strip" style="background:#a7f3d0;"></div>
+            <div class="cinema-color-strip" style="background:#fed7aa;"></div>
+          </div>
+          <div class="cinema-body">
+            <div class="cinema-title">Wes Anderson Pastel Palette</div>
+            <p class="cinema-desc">
+              Muted whimsical storybook tones (*The Grand Budapest Hotel*). Dusty rose pinks, soft mustard yellow, pale mint green, and nostalgic creamy whites.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="Wes Anderson aesthetic, whimsical pastel color palette">Wes Anderson</span>
+              <span class="kw-tag" data-append="dusty rose, pale mustard yellow, and mint green">Dusty Pastels</span>
+              <span class="kw-tag" data-append="retro symmetrical color harmony">Symmetrical Tone</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bleach Bypass -->
+        <div class="cinema-card">
+          <div class="cinema-banner">
+            <div class="cinema-color-strip" style="background:#18181b;"></div>
+            <div class="cinema-color-strip" style="background:#52525b;"></div>
+            <div class="cinema-color-strip" style="background:#71717a;"></div>
+            <div class="cinema-color-strip" style="background:#b91c1c;"></div>
+          </div>
+          <div class="cinema-body">
+            <div class="cinema-title">Bleach Bypass (Silver Retention)</div>
+            <p class="cinema-desc">
+              Gritty, hard-hitting desaturation with ultra-high contrast and crushed inky blacks (*Saving Private Ryan*, *Fight Club*, *Se7en*).
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="bleach bypass cinematic film processing, desaturated silver retention">Bleach Bypass</span>
+              <span class="kw-tag" data-append="crushed inky blacks and muted steel tones">Crushed Blacks</span>
+              <span class="kw-tag" data-append="gritty industrial contrast">Industrial Grit</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Studio Ghibli Luminous -->
+        <div class="cinema-card">
+          <div class="cinema-banner">
+            <div class="cinema-color-strip" style="background:#38bdf8;"></div>
+            <div class="cinema-color-strip" style="background:#22c55e;"></div>
+            <div class="cinema-color-strip" style="background:#fef08a;"></div>
+            <div class="cinema-color-strip" style="background:#ffffff;"></div>
+          </div>
+          <div class="cinema-body">
+            <div class="cinema-title">Studio Ghibli / Makoto Shinkai</div>
+            <p class="cinema-desc">
+              Luminous, crystal-clear anime skies. Deep azure blue blending smoothly into turquoise, lush chartreuse moss, and fluffy cumulus lit by brilliant white sun.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="Studio Ghibli painterly color palette, luminous skies">Studio Ghibli</span>
+              <span class="kw-tag" data-append="crystal azure and celadon greens, Makoto Shinkai lighting">Makoto Shinkai</span>
+              <span class="kw-tag" data-append="radiant wholesome daylight">Radiant Daylight</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fincher Green / Sickly Amber -->
+        <div class="cinema-card">
+          <div class="cinema-banner">
+            <div class="cinema-color-strip" style="background:#14532d;"></div>
+            <div class="cinema-color-strip" style="background:#713f12;"></div>
+            <div class="cinema-color-strip" style="background:#0a0a0a;"></div>
+            <div class="cinema-color-strip" style="background:#3f6212;"></div>
+          </div>
+          <div class="cinema-body">
+            <div class="cinema-title">David Fincher Low-Key Green/Amber</div>
+            <p class="cinema-desc">
+              Unsettling, surgical moodiness (*Zodiac*, *Mindhunter*). Sickly fluorescent greenish-yellow washes, dim practical tungsten lamps, low-key lighting.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="David Fincher color grading, low-key sickly greenish amber lighting">Fincher Style</span>
+              <span class="kw-tag" data-append="fluorescent greenish wash, muted murky shadows">Murky Shadows</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vaporwave / Retro Synth -->
+        <div class="cinema-card">
+          <div class="cinema-banner">
+            <div class="cinema-color-strip" style="background:#a855f7;"></div>
+            <div class="cinema-color-strip" style="background:#ec4899;"></div>
+            <div class="cinema-color-strip" style="background:#06b6d4;"></div>
+            <div class="cinema-color-strip" style="background:#1e1b4b;"></div>
+          </div>
+          <div class="cinema-body">
+            <div class="cinema-title">Synthwave / Midnight Violet</div>
+            <p class="cinema-desc">
+              1980s retro-futuristic dream. Electric magenta, vibrant ultraviolet purple, and glowing cyan lasers against deep starless midnight velvet.
+            </p>
+            <div class="film-keywords">
+              <span class="kw-tag" data-append="retro synthwave color palette, neon magenta and cyan glow">Synthwave</span>
+              <span class="kw-tag" data-append="ultraviolet violet and electric turquoise">Ultraviolet</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 5: The Nuanced Vocabulary Bank -->
+    <section class="section-block" id="vocabulary">
+      <div class="section-header">
+        <h2 class="section-title">💎 5. Nuanced Color Vocabulary Bank</h2>
+        <div class="section-desc">Replace overused primary words with physical pigments and artistic terms that CLIP models associate with professional artwork.</div>
+      </div>
+
+      <div class="vocab-table-container">
+        <table class="vocab-table">
+          <thead>
+            <tr>
+              <th style="width: 140px;">Bland Cliché</th>
+              <th>High-Impact Pigment / Atmosphere Alternatives (Click to Add)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="vocab-cliche-cell">❌ "Blue"</td>
+              <td>
+                <div class="vocab-tokens-wrap">
+                  <span class="vocab-pill" data-append="cerulean"><span class="vocab-dot" style="background:#0284c7;"></span> Cerulean (Clear Day)</span>
+                  <span class="vocab-pill" data-append="cobalt blue"><span class="vocab-dot" style="background:#1d4ed8;"></span> Cobalt Blue (Deep Rich)</span>
+                  <span class="vocab-pill" data-append="lapis lazuli"><span class="vocab-dot" style="background:#1e40af;"></span> Lapis Lazuli (Precious)</span>
+                  <span class="vocab-pill" data-append="ultramarine"><span class="vocab-dot" style="background:#312e81;"></span> Ultramarine (Twilight)</span>
+                  <span class="vocab-pill" data-append="steel blue"><span class="vocab-dot" style="background:#64748b;"></span> Steel Blue (Industrial)</span>
+                  <span class="vocab-pill" data-append="periwinkle"><span class="vocab-dot" style="background:#a5b4fc;"></span> Periwinkle (Soft Lilac Blue)</span>
+                  <span class="vocab-pill" data-append="indigo abyss"><span class="vocab-dot" style="background:#0f172a;"></span> Indigo Abyss (Deep Dark)</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="vocab-cliche-cell">❌ "Red"</td>
+              <td>
+                <div class="vocab-tokens-wrap">
+                  <span class="vocab-pill" data-append="crimson red"><span class="vocab-dot" style="background:#be123c;"></span> Crimson (Bold Velvet)</span>
+                  <span class="vocab-pill" data-append="vermilion"><span class="vocab-dot" style="background:#e11d48;"></span> Vermilion (Fiery Coral Red)</span>
+                  <span class="vocab-pill" data-append="burnt sienna"><span class="vocab-dot" style="background:#9a3412;"></span> Burnt Sienna (Earthy Clay)</span>
+                  <span class="vocab-pill" data-append="terracotta"><span class="vocab-dot" style="background:#c2410c;"></span> Terracotta (Warm Mediterranean)</span>
+                  <span class="vocab-pill" data-append="carmine red"><span class="vocab-dot" style="background:#9f1239;"></span> Carmine (Rich Pigment)</span>
+                  <span class="vocab-pill" data-append="garnet red"><span class="vocab-dot" style="background:#881337;"></span> Garnet (Deep Gemstone)</span>
+                  <span class="vocab-pill" data-append="oxblood maroon"><span class="vocab-dot" style="background:#4c0519;"></span> Oxblood Maroon (Vintage Leather)</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="vocab-cliche-cell">❌ "Green"</td>
+              <td>
+                <div class="vocab-tokens-wrap">
+                  <span class="vocab-pill" data-append="sage green"><span class="vocab-dot" style="background:#84cc16;"></span> Sage Green (Muted Dusty)</span>
+                  <span class="vocab-pill" data-append="viridian"><span class="vocab-dot" style="background:#0f766e;"></span> Viridian (Deep Oceanic Forest)</span>
+                  <span class="vocab-pill" data-append="celadon"><span class="vocab-dot" style="background:#a7f3d0;"></span> Celadon (Pale Jade Mist)</span>
+                  <span class="vocab-pill" data-append="chartreuse"><span class="vocab-dot" style="background:#a3e635;"></span> Chartreuse (Vibrant Sunlit Leaf)</span>
+                  <span class="vocab-pill" data-append="moss green"><span class="vocab-dot" style="background:#4d7c0f;"></span> Moss Green (Damp Earthy)</span>
+                  <span class="vocab-pill" data-append="emerald"><span class="vocab-dot" style="background:#059669;"></span> Emerald (Jeweled Luxury)</span>
+                  <span class="vocab-pill" data-append="olive drab"><span class="vocab-dot" style="background:#65a30d;"></span> Olive Drab (Organic Military)</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="vocab-cliche-cell">❌ "Yellow / Orange"</td>
+              <td>
+                <div class="vocab-tokens-wrap">
+                  <span class="vocab-pill" data-append="ochre yellow"><span class="vocab-dot" style="background:#d97706;"></span> Ochre (Natural Earth Yellow)</span>
+                  <span class="vocab-pill" data-append="saffron"><span class="vocab-dot" style="background:#f59e0b;"></span> Saffron (Spicy Warm Sunset)</span>
+                  <span class="vocab-pill" data-append="molten copper"><span class="vocab-dot" style="background:#ea580c;"></span> Molten Copper (Metallic Fire)</span>
+                  <span class="vocab-pill" data-append="amber glow"><span class="vocab-dot" style="background:#b45309;"></span> Amber Glow (Warm Resin)</span>
+                  <span class="vocab-pill" data-append="marigold"><span class="vocab-dot" style="background:#fbbf24;"></span> Marigold (Golden Floral)</span>
+                  <span class="vocab-pill" data-append="apricot"><span class="vocab-dot" style="background:#fed7aa;"></span> Apricot (Gentle Pastel Peach)</span>
+                  <span class="vocab-pill" data-append="cadmium yellow"><span class="vocab-dot" style="background:#facc15;"></span> Cadmium Yellow (Pure Oil Paint)</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="vocab-cliche-cell">❌ "White / Black"</td>
+              <td>
+                <div class="vocab-tokens-wrap">
+                  <span class="vocab-pill" data-append="obsidian black"><span class="vocab-dot" style="background:#000000; border:1px solid #777;"></span> Obsidian (Volcanic Glass)</span>
+                  <span class="vocab-pill" data-append="charcoal slate"><span class="vocab-dot" style="background:#1e293b;"></span> Charcoal Slate (Matte Dark)</span>
+                  <span class="vocab-pill" data-append="pewter gray"><span class="vocab-dot" style="background:#64748b;"></span> Pewter Gray (Metallic Matte)</span>
+                  <span class="vocab-pill" data-append="bone white"><span class="vocab-dot" style="background:#f8fafc; border:1px solid #777;"></span> Bone White (Earthy Soft)</span>
+                  <span class="vocab-pill" data-append="alabaster"><span class="vocab-dot" style="background:#f1f5f9; border:1px solid #777;"></span> Alabaster (Smooth Translucent)</span>
+                  <span class="vocab-pill" data-append="warm ivory"><span class="vocab-dot" style="background:#fefce8; border:1px solid #777;"></span> Warm Ivory (Gentle Cream)</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Sticky Bottom Prompt Builder Bar -->
+  <div class="prompt-builder-bar">
+    <div class="builder-inner">
+      <div class="builder-label">
+        <span>🪄 Prompt Scratchpad</span>
+      </div>
+      <div class="builder-input-wrap">
+        <input type="text" id="builderInput" class="builder-input" placeholder="Click any keyword above or type here to build your prompt snippet...">
+      </div>
+      <div class="builder-actions">
+        <button class="btn-builder-copy" id="builderCopyBtn" title="Copy full prompt to clipboard">
+          📋 Copy Snippet
+        </button>
+        <button class="btn-builder-clear" id="builderClearBtn" title="Clear scratchpad">
+          &times; Clear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Feedback -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✓</span>
+    <span id="toastMsg">Copied prompt snippet to clipboard!</span>
+  </div>
+
+  <script>
+    const builderInput = document.getElementById('builderInput');
+    const builderCopyBtn = document.getElementById('builderCopyBtn');
+    const builderClearBtn = document.getElementById('builderClearBtn');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    const themeBtn = document.getElementById('themeBtn');
+
+    let toastTimer = null;
+    function showToast(text) {
+      if (toastTimer) clearTimeout(toastTimer);
+      toastMsg.textContent = text;
+      toast.classList.add('show');
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2400);
+    }
+
+    function copyToClipboard(text, msg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(msg || 'Copied to clipboard!');
+        }).catch(() => {
+          fallbackCopy(text, msg);
+        });
+      } else {
+        fallbackCopy(text, msg);
+      }
+    }
+
+    function fallbackCopy(text, msg) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(msg || 'Copied to clipboard!');
+      } catch (e) {
+        alert('Copied: ' + text);
+      }
+      document.body.removeChild(ta);
+    }
+
+    // Append to prompt builder
+    function appendToBuilder(text) {
+      if (!text) return;
+      let cur = builderInput.value.trim();
+      if (cur) {
+        if (!cur.endsWith(',')) cur += ',';
+        builderInput.value = cur + ' ' + text;
+      } else {
+        builderInput.value = text;
+      }
+      showToast('Added to Prompt Scratchpad!');
+      builderInput.focus();
+    }
+
+    // Copy Prompt Buttons inside cards
+    document.querySelectorAll('.btn-copy-prompt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.getAttribute('data-copy');
+        copyToClipboard(text, 'Copied full prompt to clipboard!');
+      });
+    });
+
+    // Add to Builder Buttons
+    document.querySelectorAll('.btn-add-builder').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.getAttribute('data-append');
+        appendToBuilder(text);
+      });
+    });
+
+    // Film stock & lighting keyword tags
+    document.querySelectorAll('.kw-tag, .vocab-pill').forEach(tag => {
+      tag.addEventListener('click', () => {
+        const text = tag.getAttribute('data-append');
+        appendToBuilder(text);
+      });
+    });
+
+    // Builder Copy
+    builderCopyBtn.addEventListener('click', () => {
+      const val = builderInput.value.trim();
+      if (!val) {
+        showToast('Scratchpad is empty! Click any keyword above to add tags.');
+        return;
+      }
+      copyToClipboard(val, 'Copied prompt snippet to clipboard!');
+    });
+
+    // Builder Clear
+    builderClearBtn.addEventListener('click', () => {
+      builderInput.value = '';
+      showToast('Scratchpad cleared.');
+    });
+
+    // Theme Toggle
+    themeBtn.addEventListener('click', () => {
+      const cur = document.body.getAttribute('data-theme');
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', next);
+      themeBtn.textContent = next === 'dark' ? '☀️' : '🌙';
+    });
+  </script>
+</body>
+</html>
